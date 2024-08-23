@@ -39,7 +39,7 @@ jobs:
 
     - name: Authenticate kubectl
       run: |
-        gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+        gcloud auth activate-service-account --key-file=${{ secrets.GCR_JSON_KEY_BASE64 }}
         gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
 
     - name: Deploy backend to GKE
