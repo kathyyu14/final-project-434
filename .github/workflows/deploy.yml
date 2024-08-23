@@ -13,13 +13,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Decode Base64 GCR_JSON_KEY and Authenticate to Google
-      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > key.json
-
     - name: Authenticate to Google
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: "$(cat key.json)"
+        credentials_json: "${{ secrets.GCR_JSON_KEY }}"
 
     - name: Set up Google Cloud SDK
       uses: google-github-actions/setup-gcloud@v2
