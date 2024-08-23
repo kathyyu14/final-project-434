@@ -15,7 +15,7 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
-    
+
     - name: Log in to Google Container Registry
       run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode | docker login -u _json_key --password-stdin https://gcr.io
 
@@ -31,16 +31,16 @@ jobs:
         docker build -t gcr.io/final-project-434/frontend:v1 .
         docker push gcr.io/final-project-434/frontend:v1
 
-    - name: Save GCP service account key
-      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > ${{ github.workspace }}/gcr-key.json
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0.9.0
+      with:
+        service_account_key: ${{ secrets.GCR_JSON_KEY_BASE64 }}
+        project_id: final-project-434
 
-    - name: Authenticate kubectl
+    - name: Get GKE credentials
+      run: gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
+
+    - name: Deploy to GKE
       run: |
-        gcloud auth activate-service-account --key-file=${{ github.workspace }}/gcr-key.json
-        gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
-
-    - name: Deploy backend to GKE
-      run: kubectl apply -f backend-deployment.yaml --validate=false
-
-    - name: Deploy frontend to GKE
-      run: kubectl apply -f frontend-deployment.yaml --validate=false
+        kubectl apply -f backend-deployment.yaml --validate=false
+        kubectl apply -f frontend-deployment.yaml --validate=false
