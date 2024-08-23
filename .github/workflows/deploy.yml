@@ -29,6 +29,9 @@ jobs:
         cluster_name: final434-cluster-1
         location: us-central1-a
 
+    - name: Log in to Google Container Registry
+      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode | docker login -u _json_key --password-stdin https://gcr.io
+
     - name: Build and push backend Docker image
       run: |
         cd backend
