@@ -43,4 +43,5 @@ jobs:
           backend-deployment.yaml
           frontend-deployment.yaml
         project_id: final-project-434
-        credentials: ${{ secrets.GCP_SA_KEY }}
+        app_name: 434-final-deployment
+        credentials: ${{ secrets.GCR_JSON_KEY_BASE64 }}
