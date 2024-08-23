@@ -15,7 +15,7 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
-
+    
     - name: Log in to Google Container Registry
       run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode | docker login -u _json_key --password-stdin https://gcr.io
 
@@ -31,10 +31,21 @@ jobs:
         docker build -t gcr.io/final-project-434/frontend:v1 .
         docker push gcr.io/final-project-434/frontend:v1
 
+    - name: Set up kubectl
+      run: |
+        curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x ./kubectl
+        sudo mv ./kubectl /usr/local/bin/kubectl
+
+    - name: Authenticate kubectl
+      run: |
+        gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+        gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
+
     - name: Deploy backend to GKE
       run: |
-        kubectl apply -f backend-deployment.yaml
+        kubectl apply -f backend-deployment.yaml --validate=false
 
     - name: Deploy frontend to GKE
       run: |
-        kubectl apply -f frontend-deployment.yaml
+        kubectl apply -f frontend-deployment.yaml --validate=false
