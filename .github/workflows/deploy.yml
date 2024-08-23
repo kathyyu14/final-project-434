@@ -45,8 +45,8 @@ jobs:
     - name: Get GKE credentials
       run: |
         export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-        ./google-cloud-sdk/bin/gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
-        kubectl config current-context
+        gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
+
 
     - name: Apply Kubernetes Manifests
       run: |
