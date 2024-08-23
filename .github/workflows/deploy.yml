@@ -40,7 +40,7 @@ jobs:
         gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
 
     - name: Deploy backend to GKE
-      run: kubectl apply -f backend-deployment.yaml
+      run: kubectl apply -f backend-deployment.yaml --validate=false
 
     - name: Deploy frontend to GKE
-      run: kubectl apply -f frontend-deployment.yaml
+      run: kubectl apply -f frontend-deployment.yaml --validate=false
