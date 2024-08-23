@@ -31,13 +31,6 @@ jobs:
         docker build -t gcr.io/final-project-434/frontend:v1 .
         docker push gcr.io/final-project-434/frontend:v1
 
-    - name: Install GKE Auth Plugin
-      run: |
-        curl -LO "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-367.0.0-linux-x86_64.tar.gz"
-        tar -xzf google-cloud-sdk-367.0.0-linux-x86_64.tar.gz
-        ./google-cloud-sdk/install.sh -q
-        ./google-cloud-sdk/bin/gcloud components install gke-gcloud-auth-plugin
-    
     - name: Authenticate to Google Cloud
       run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > key.json && gcloud auth activate-service-account --key-file=key.json && gcloud config set project final-project-434
 
@@ -46,6 +39,5 @@ jobs:
 
     - name: Apply Kubernetes Manifests
       run: |
-        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
         kubectl apply -f backend-deployment.yaml --validate=false
         kubectl apply -f frontend-deployment.yaml --validate=false
