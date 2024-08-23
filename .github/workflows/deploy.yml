@@ -13,11 +13,24 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-    
-    - name: Log in to Google Container Registry
-      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode | docker login -u _json_key --password-stdin https://gcr.io
+    - name: Decode Base64 GCR_JSON_KEY and Authenticate to Google
+      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > key.json
+
+    - name: Authenticate to Google
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: "$(cat key.json)"
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        install_components: "gke-gcloud-auth-plugin"
+
+    - name: Authenticate to GKE cluster
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: final434-cluster-1
+        location: us-central1-a
 
     - name: Build and push backend Docker image
       run: |
@@ -31,24 +44,7 @@ jobs:
         docker build -t gcr.io/final-project-434/frontend:v1 .
         docker push gcr.io/final-project-434/frontend:v1
 
-    - name: Install GKE Auth Plugin
-      run: |
-        curl -LO "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-367.0.0-linux-x86_64.tar.gz"
-        tar -xzf google-cloud-sdk-367.0.0-linux-x86_64.tar.gz
-        ./google-cloud-sdk/install.sh -q
-        ./google-cloud-sdk/bin/gcloud components install gke-gcloud-auth-plugin
-
-    - name: Authenticate to Google Cloud
-      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > key.json && gcloud auth activate-service-account --key-file=key.json && gcloud config set project final-project-434
-    
-    - name: Get GKE credentials
-      run: |
-        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-        gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
-    
     - name: Apply Kubernetes Manifests
       run: |
-        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
         kubectl apply -f backend-deployment.yaml --validate=false
         kubectl apply -f frontend-deployment.yaml --validate=false
-
