@@ -32,11 +32,15 @@ jobs:
         docker push gcr.io/final-project-434/frontend:v1
 
     - name: Authenticate to Google Cloud
-      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > key.json && gcloud auth activate-service-account --key-file=key.json && gcloud config set project final-project-434
-
+      run: |
+        echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > key.json
+        gcloud auth activate-service-account --key-file=key.json
+        gcloud config set project final-project-434
+    
     - name: Get GKE credentials
-      run: gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
-
+      run: |
+        gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
+    
     - name: Apply Kubernetes Manifests
       run: |
         kubectl apply -f backend-deployment.yaml --validate=false
