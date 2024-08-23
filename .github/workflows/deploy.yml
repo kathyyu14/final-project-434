@@ -31,7 +31,7 @@ jobs:
         docker push gcr.io/final-project-434/frontend:v1
 
     - name: Deploy to GKE
-      uses: google-github-actions/deploy-gke@v0.10.0
+      uses: google-github-actions/deploy-gke@v0.0.1
       with:
         cluster_name: final434-cluster-1
         location: us-central1-a
