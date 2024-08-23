@@ -31,21 +31,16 @@ jobs:
         docker build -t gcr.io/final-project-434/frontend:v1 .
         docker push gcr.io/final-project-434/frontend:v1
 
-    - name: Set up kubectl
-      run: |
-        curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-        chmod +x ./kubectl
-        sudo mv ./kubectl /usr/local/bin/kubectl
+    - name: Save GCP service account key
+      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > ${{ github.workspace }}/gcr-key.json
 
     - name: Authenticate kubectl
       run: |
-        gcloud auth activate-service-account --key-file=${{ secrets.GCR_JSON_KEY_BASE64 }}
+        gcloud auth activate-service-account --key-file=${{ github.workspace }}/gcr-key.json
         gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
 
     - name: Deploy backend to GKE
-      run: |
-        kubectl apply -f backend-deployment.yaml --validate=false
+      run: kubectl apply -f backend-deployment.yaml
 
     - name: Deploy frontend to GKE
-      run: |
-        kubectl apply -f frontend-deployment.yaml --validate=false
+      run: kubectl apply -f frontend-deployment.yaml
