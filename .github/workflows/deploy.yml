@@ -15,7 +15,7 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
-
+    
     - name: Log in to Google Container Registry
       run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode | docker login -u _json_key --password-stdin https://gcr.io
 
@@ -31,24 +31,13 @@ jobs:
         docker build -t gcr.io/final-project-434/frontend:v1 .
         docker push gcr.io/final-project-434/frontend:v1
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v2.0.0
-      with:
-        service_account_key: ${{ secrets.GCR_JSON_KEY_BASE64 }}
-        project_id: final-project-434
-
-    - name: Install GKE Auth Plugin
-      run: |
-        curl -LO "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-367.0.0-linux-x86_64.tar.gz"
-        tar -xzf google-cloud-sdk-367.0.0-linux-x86_64.tar.gz
-        ./google-cloud-sdk/install.sh -q
-        ./google-cloud-sdk/bin/gcloud components install gke-gcloud-auth-plugin
+    - name: Authenticate to Google Cloud
+      run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > key.json && gcloud auth activate-service-account --key-file=key.json && gcloud config set project final-project-434
 
     - name: Get GKE credentials
-      run: ./google-cloud-sdk/bin/gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
+      run: gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
 
-    - name: Apply Kubernetes Manifests
+    - name: Deploy to GKE
       run: |
-        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-        ./google-cloud-sdk/bin/kubectl apply -f backend-deployment.yaml --validate=false
-        ./google-cloud-sdk/bin/kubectl apply -f frontend-deployment.yaml --validate=false
+        kubectl apply -f backend-deployment.yaml --validate=false
+        kubectl apply -f frontend-deployment.yaml --validate=false
