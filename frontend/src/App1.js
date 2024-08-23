@@ -25,7 +25,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Top 20 Dog Breeds Predicted for 2024</h1>
+      <h1>Top 20 Predicted Dog Breed Popularity for 2024</h1>
       <ul>
         {dogRanks.slice(0, 20).map((dog, index) => (
           <li key={index}>{dog.Breed}: Rank {dog.PredictedRank2024}</li>
