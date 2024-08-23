@@ -37,10 +37,15 @@ jobs:
         service_account_key: ${{ secrets.GCR_JSON_KEY_BASE64 }}
         project_id: final-project-434
 
+    - name: Install GKE Auth Plugin
+      run: |
+        sudo apt-get update && sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+
     - name: Get GKE credentials
       run: gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
 
-    - name: Deploy to GKE
+    - name: Apply Kubernetes Manifests
       run: |
+        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
         kubectl apply -f backend-deployment.yaml --validate=false
         kubectl apply -f frontend-deployment.yaml --validate=false
