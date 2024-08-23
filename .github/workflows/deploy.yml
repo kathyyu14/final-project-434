@@ -40,18 +40,15 @@ jobs:
 
     - name: Authenticate to Google Cloud
       run: echo ${{ secrets.GCR_JSON_KEY_BASE64 }} | base64 --decode > key.json && gcloud auth activate-service-account --key-file=key.json && gcloud config set project final-project-434
-
-    - name: Install GKE Auth Plugin and Set Environment Variable
-      run: |
-        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-        gcloud components install gke-gcloud-auth-plugin
     
     - name: Get GKE credentials
       run: |
+        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
         gcloud container clusters get-credentials final434-cluster-1 --zone us-central1-a --project final-project-434
     
     - name: Apply Kubernetes Manifests
       run: |
+        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
         kubectl apply -f backend-deployment.yaml --validate=false
         kubectl apply -f frontend-deployment.yaml --validate=false
 
