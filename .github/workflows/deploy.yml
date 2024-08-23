@@ -24,6 +24,7 @@ jobs:
 
     - name: Build and push backend Docker image
       run: |
+        cd backend
         docker build -t gcr.io/final-project-434/backend:v1 .
         docker push gcr.io/final-project-434/backend:v1
 
