@@ -42,7 +42,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Top 20 Dog Breeds Predicted for 2024</h1>
+      <h1>Top 20 Predicted Dog Breed Popularity for 2024</h1>
       <ul>
         {dogRanks.map((dog, index) => (
           <li key={index}>
