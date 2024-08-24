@@ -44,7 +44,11 @@ jobs:
         docker build -t gcr.io/final-project-434/frontend:v1 .
         docker push gcr.io/final-project-434/frontend:v1
 
-    - name: Apply Kubernetes Manifests
+    # - name: Apply Kubernetes Manifests
+    #   run: |
+    #     kubectl apply -f backend-deployment.yaml --validate=false
+    #     kubectl apply -f frontend-deployment.yaml --validate=false
+    - name: Update Kubernetes deployment
       run: |
-        kubectl apply -f backend-deployment.yaml --validate=false
-        kubectl apply -f frontend-deployment.yaml --validate=false
+        kubectl set image deployment/backend-deployment backend=gcr.io/final-project-434/backend:v1
+        kubectl set image deployment/frontend-deployment frontend=gcr.io/final-project-434/frontend:v1
