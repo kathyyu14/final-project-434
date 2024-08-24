@@ -1,0 +1,23 @@
+.dog-rankings table {
+  width: 80%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-family: 'Arial', sans-serif;
+  align-items: center;
+  justify-content: center;
+}
+
+.dog-rankings th, .dog-rankings td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.dog-rankings th {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.dog-rankings tr:hover {
+  background-color: #f2f2f2;
+}
